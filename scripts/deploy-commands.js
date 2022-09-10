@@ -15,6 +15,9 @@ for (const file of commandFiles) {
   commands.push(command.data.toJSON());
 }
 
+console.log("DEBUGING");
+console.log("token: " + process.env.DISCORD_TOKEN);
+
 const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
 
 rest

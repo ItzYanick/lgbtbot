@@ -6,23 +6,43 @@ let role = null;
 
 const acceptedEmoji = "✅";
 
+async function createMessages(channel) {
+  await channel.send(messages.de.join("\n"));
+  await channel.send(messages.en.join("\n"));
+}
+
 module.exports = {
   name: "rules",
   getMessageId() {
     return messageId;
   },
   async init(client) {
-    const channel = await client.channels.fetch(
+    const reactionChannel = await client.channels.fetch(
       process.env.REACTIONS_RULES_CHANNEL_ID
     );
-    const channelMessages = await channel.messages.fetch({ limit: 100 });
-    let tmp;
-    if (channelMessages.size !== 3) {
-      await channelMessages.forEach((message) => {
+    const rulesChannel = await client.channels.fetch(
+      process.env.DISCORD_RULES_CHANNEL_ID
+    );
+    const reactionChannelMessages = await reactionChannel.messages.fetch({
+      limit: 100,
+    });
+    const rulesChannelMessages = await rulesChannel.messages.fetch({
+      limit: 100,
+    });
+
+    if (rulesChannelMessages.size !== 2) {
+      await rulesChannelMessages.forEach((message) => {
         message.delete();
       });
-      await channel.send(messages.de.join("\n"));
-      await channel.send(messages.en.join("\n"));
+      createMessages(rulesChannel);
+    }
+
+    let tmp;
+    if (reactionChannelMessages.size !== 3) {
+      await reactionChannelMessages.forEach((message) => {
+        message.delete();
+      });
+      createMessages(reactionChannel);
       const embed = new EmbedBuilder()
         .setColor("#17b111")
         .setTitle(messages.embed.title)
@@ -32,9 +52,10 @@ module.exports = {
 
       console.log("rules: created messages");
     } else {
-      tmp = channelMessages.first();
+      tmp = reactionChannelMessages.first();
       console.log("rules: messages already exist");
     }
+
     messageId = tmp.id;
     role = await tmp.guild.roles.fetch(process.env.REACTIONS_RULES_ROLE_ID);
     return;
@@ -42,15 +63,12 @@ module.exports = {
   async reactionAdd(reaction, guildMember) {
     if (reaction.emoji.toString() === acceptedEmoji) {
       guildMember.roles.add(role);
-    } else {
-      await reaction.remove();
     }
+    await reaction.remove();
     return;
   },
   async reactionRemove(reaction, guildMember) {
-    if (reaction.emoji.toString() === acceptedEmoji) {
-      guildMember.roles.remove(role);
-    }
+    // no action
     return;
   },
 };

@@ -58,7 +58,7 @@ client.on("messageReactionAdd", async (interaction, user) => {
   const reaction = client.reactions.get(interaction.message.id);
   if (!reaction) return;
   const guildMember = await interaction.message.guild.members.fetch(user.id);
-  await reaction.reactionAdd(interaction, guildMember);
+  await reaction.reactionAdd(interaction, user, guildMember);
 });
 
 client.on("messageReactionRemove", async (interaction, user) => {
@@ -74,7 +74,7 @@ client.on("messageReactionRemove", async (interaction, user) => {
   const reaction = client.reactions.get(interaction.message.id);
   if (!reaction) return;
   const guildMember = await interaction.message.guild.members.fetch(user.id);
-  await reaction.reactionRemove(interaction, guildMember);
+  await reaction.reactionRemove(interaction, user, guildMember);
 });
 
 client.once("ready", async () => {

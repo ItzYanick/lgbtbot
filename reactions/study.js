@@ -129,7 +129,7 @@ module.exports = {
     );
     return;
   },
-  async reactionAdd(reaction, guildMember) {
+  async reactionAdd(reaction, user, guildMember) {
     const emoji = reaction.emoji.toString();
     switch (emoji) {
       case architectureEmoji:
@@ -179,7 +179,7 @@ module.exports = {
     }
     return;
   },
-  async reactionRemove(reaction, guildMember) {
+  async reactionRemove(reaction, user, guildMember) {
     const emoji = reaction.emoji.toString();
     switch (emoji) {
       case architectureEmoji:

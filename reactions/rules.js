@@ -42,12 +42,12 @@ module.exports = {
       await reactionChannelMessages.forEach((message) => {
         message.delete();
       });
-      createMessages(reactionChannel);
+      await createMessages(reactionChannel);
       const embed = new EmbedBuilder()
         .setColor("#17b111")
         .setTitle(messages.embed.title)
         .setDescription(messages.embed.description);
-      tmp = await channel.send({ embeds: [embed] });
+      tmp = await reactionChannel.send({ embeds: [embed] });
       await tmp.react(acceptedEmoji);
 
       console.log("rules: created messages");
@@ -60,14 +60,16 @@ module.exports = {
     role = await tmp.guild.roles.fetch(process.env.REACTIONS_RULES_ROLE_ID);
     return;
   },
-  async reactionAdd(reaction, guildMember) {
+  async reactionAdd(reaction, user, guildMember) {
     if (reaction.emoji.toString() === acceptedEmoji) {
       guildMember.roles.add(role);
+      reaction.users.remove(user);
+    } else {
+      await reaction.remove();
     }
-    await reaction.remove();
     return;
   },
-  async reactionRemove(reaction, guildMember) {
+  async reactionRemove(reaction, user, guildMember) {
     // no action
     return;
   },
